@@ -11,6 +11,8 @@ public class CharacterScript : MonoBehaviour
     private float burstPeriod = 10f;
     private float burstLeft;
 
+    public float burstLevel => burstLeft / burstPeriod;
+
     void Start()
     {
         moveAction = InputSystem.actions.FindAction("Move");
@@ -72,8 +74,8 @@ public class CharacterScript : MonoBehaviour
             burstLeft -= Time.deltaTime;
             if (burstLeft <= 0f)
             {
+                burstLeft = 0f;
                 GameState.isBurst = false;
-                Debug.Log("Burst --");
             }
         }
     }

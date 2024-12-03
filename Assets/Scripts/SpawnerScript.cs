@@ -30,7 +30,7 @@ public class SpawnerScript : MonoBehaviour
         var pepper = GameObject.Instantiate(pepperPrefab);
         Vector3 pos = new Vector3(Random.Range(50, 950), 0, Random.Range(50, 950));
         pos.y = Terrain.activeTerrain.SampleHeight(pos) + Random.Range(0.5f, 10.0f);
-        pepper.transform.position = pos;  // new Vector3(53, 6, 78);
+        pepper.transform.position =  new Vector3(53, 6, 78);
     }
     private void OnBurstChanged(string ignored)
     {
@@ -44,3 +44,7 @@ public class SpawnerScript : MonoBehaviour
         GameState.RemoveListener(nameof(GameState.isBurst), OnBurstChanged);
     }
 }
+/* Д.З. До Display - відображення додати відомості про 
+ * кількість зібраних "монет". Забезпечити адаптивність
+ * до змін розмірів вікна.
+ */
