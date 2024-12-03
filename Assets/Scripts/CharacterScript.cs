@@ -6,35 +6,89 @@ public class CharacterScript : MonoBehaviour
     private InputAction moveAction;
     private CharacterController characterController;
     private float speedFactor = 5f;
+    private bool isMoving = false;
+    private Animator animator;
+    private float burstPeriod = 10f;
+    private float burstLeft;
 
     void Start()
     {
         moveAction = InputSystem.actions.FindAction("Move");
         characterController = GetComponent<CharacterController>();
+        animator = GetComponent<Animator>();
+        GameState.AddListener(nameof(GameState.isBurst), OnBurstChanged);
     }
 
     void Update()
     {
-        Vector2 moveValue = moveAction.ReadValue<Vector2>();
-        Vector3 move = Camera.main.transform.forward;  // напрям погляду камери
-        move.y = 0.0f;   // проєктуємо на горизонтальну площину
-        if(move == Vector3.zero)  // вектор був вертикальним (погляд вниз)
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            move = Camera.main.transform.up;   // тоді вперед "дивиться" вісь Y
+            isMoving = !isMoving;
         }
-        move.Normalize();   // видовжуємо вектор після проєктування
-        // у даному місці move - напрям постійного руху (польоту)
+        if (isMoving)
+        {
+            Vector2 moveValue = moveAction.ReadValue<Vector2>();
+            Vector3 move = Camera.main.transform.forward;  // напрям погляду камери
+            move.y = 0.0f;   // проєктуємо на горизонтальну площину
+            if (move == Vector3.zero)  // вектор був вертикальним (погляд вниз)
+            {
+                move = Camera.main.transform.up;   // тоді вперед "дивиться" вісь Y
+            }
+            move.Normalize();   // видовжуємо вектор після проєктування
+                                // у даному місці move - напрям постійного руху (польоту)
 
-        Vector3 moveForward = move;  // зберігаємо для повороту персонажа
+            Vector3 moveForward = move;  // зберігаємо для повороту персонажа
 
-        // додаємо до нього управління, яке теж орієнтовано по камері
-        move += moveValue.x * Camera.main.transform.right ;
-        move.y = moveValue.y;
-        move.y -= 30f * Time.deltaTime;   // падіння
+            // додаємо до нього управління, яке теж орієнтовано по камері
+            move += moveValue.x * Camera.main.transform.right;
+            move.y = moveValue.y;
+            move.y -= 30f * Time.deltaTime;   // падіння
+            characterController.Move(speedFactor * Time.deltaTime * move);
+            this.transform.forward = moveForward;   // повертаємо персонажа у напряму руху
+                                                    // Debug.Log(this.transform.position.y - Terrain.activeTerrain.SampleHeight(this.transform.position));
+            // перемикаємось між анімаціями руху/польоту в залежності від
+            // висоти над землею
+            if(this.transform.position.y - 
+                Terrain.activeTerrain.SampleHeight(this.transform.position) > 1.5f)
+            {
+                animator.SetInteger("MoveState", 2);
+            }
+            else
+            {
+                animator.SetInteger("MoveState", 1);
+            }
+            
+        }
+        else
+        {
+            animator.SetInteger("MoveState", 0);
+        }
+    }
 
-        characterController.Move(speedFactor * Time.deltaTime * move);
-        this.transform.forward = moveForward;   // повертаємо персонажа у напряму руху
-        // Debug.Log(this.transform.position.y - Terrain.activeTerrain.SampleHeight(this.transform.position));
+    private void LateUpdate()
+    {
+        if (burstLeft > 0f)
+        {
+            burstLeft -= Time.deltaTime;
+            if (burstLeft <= 0f)
+            {
+                GameState.isBurst = false;
+                Debug.Log("Burst --");
+            }
+        }
+    }
+
+    private void OnBurstChanged(string ignored)
+    {
+        if (GameState.isBurst)
+        {
+            Debug.Log("Burst ++");
+            burstLeft = burstPeriod;
+        }
+    }
+    private void OnDestroy()
+    {
+        GameState.RemoveListener(nameof(GameState.isBurst), OnBurstChanged);
     }
 }
 /* Д.З. Обмежити поворот камери по вертикалі: не менше 0, не більше 90

@@ -1,4 +1,4 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using UnityEngine.InputSystem;
 
 public class CameraScript : MonoBehaviour
@@ -6,8 +6,8 @@ public class CameraScript : MonoBehaviour
     private GameObject character;
     private Vector3 s;
     private InputAction lookAction;
-    private float angleH, angleH0;   // накопичений та стартовий кут повороту камери по горизонталі
-    private float angleV, angleV0;   // --..-- по вертикалі
+    private float angleH, angleH0;   // РЅР°РєРѕРїРёС‡РµРЅРёР№ С‚Р° СЃС‚Р°СЂС‚РѕРІРёР№ РєСѓС‚ РїРѕРІРѕСЂРѕС‚Сѓ РєР°РјРµСЂРё РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»С–
+    private float angleV, angleV0;   // --..-- РїРѕ РІРµСЂС‚РёРєР°Р»С–
 
     void Start()
     {
