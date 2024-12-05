@@ -21,8 +21,8 @@ public class CameraScript : MonoBehaviour
     void Update()
     {
         Vector2 lookValue = lookAction.ReadValue<Vector2>();
-        angleH += lookValue.x * 0.05f;
-        angleV -= lookValue.y * 0.05f;
+        angleH += lookValue.x * 3f * Time.deltaTime;
+        angleV -= lookValue.y * 3f * Time.deltaTime;
         this.transform.eulerAngles = new Vector3(angleV, angleH, 0f);
         this.transform.position = character.transform.position + 
             Quaternion.Euler(angleV - angleV0, angleH - angleH0, 0f) * s;

@@ -7,11 +7,13 @@ public class CoinScript : MonoBehaviour
     private float minDistance = 100f;  // мін. відстань від попереднього положення
     private Animator animator;
     private Collider[] colliders;
+    private AudioSource catchSound;
 
     void Start()
     {
         animator = GetComponent<Animator>();
         colliders = GetComponents<Collider>();
+        catchSound = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -26,6 +28,7 @@ public class CoinScript : MonoBehaviour
             if(colliders[0].bounds.Intersects(other.bounds))
             {
                 animator.SetBool("IsCollected", true);
+                catchSound.Play();
             }
             else
             {
